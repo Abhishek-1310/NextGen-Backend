@@ -1,0 +1,1 @@
+{"version":3,"file":"consumptionDetailsService.js","sourceRoot":"src/","sources":["service/consumptionDetailsService.ts"],"names":[],"mappings":";;;AAGA,MAAa,yBAAyB;IAC1B,4BAA4B,CAA+B;IAEnE,YAAY,4BAA0D;QAClE,IAAI,CAAC,4BAA4B,GAAG,4BAA4B,CAAC;IACrE,CAAC;IAED,KAAK,CAAC,yBAAyB,CAAC,aAAqB;QACjD,OAAO,MAAM,IAAI,CAAC,4BAA4B,CAAC,yBAAyB,CAAC,aAAa,CAAC,CAAC;IAC5F,CAAC;CAEJ;AAXD,8DAWC"}
