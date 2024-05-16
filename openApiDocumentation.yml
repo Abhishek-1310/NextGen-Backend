@@ -1,0 +1,561 @@
+openapi: 3.0.0
+info:
+  title: NextGen Documentation
+  description: API for Carbon Footprint and Energy Consumption
+  version: '1.0'
+
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/tejasujith25_gmail.com/NextGen/1.0 
+paths:
+  /v1/authorization:
+    post:
+      summary: fetch token
+      description: authorize user with emailid and password
+      tags: 
+        - Authenication Journey
+      requestBody:
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: "#/components/schemas/ng-authorization"
+              
+      responses:
+        200:
+          description: Authenication successfully
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+                  typeoftoken: 
+                    type: string
+                    example: bearer
+                  expiresin: 
+                    type: number
+                    example: 6000 
+                  scope: 
+                    type: string
+                    example: read admin write
+                    description: Authorization token
+        400:
+          description: Invalid request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'            
+                    
+        401:
+          description: unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        500:
+          description: Internal Server Error
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                  
+  /v1/customers/forgot-password:
+    get:
+        summary: email exists
+        description: Check if an email address exists in the database
+        tags: 
+          - Forgotpassword Journey
+        parameters:
+          - in: query
+            name: emailid
+            required: true
+            schema:
+              type: string
+              format: email
+              example: user@example.com
+        responses:
+          200:
+            description: Email exists
+            content:
+              application/vnd.api+json:
+                schema:
+                  type: object
+                  properties:
+                    token:
+                      type: string
+                      example: "asdfghjkwertyuiopsdfghjkexrctybujizwexrtyhuxecrvtyhus3d4f5gtyhud4f5g6h7j8edrfg6h78d5fg6h78fg6h78f5g6h7j8df5g6h7j8frtgyftghfg678g5f6h78fgyed8ijed8ujefujid8ifed8uhedyuhedujeducheidw9se"
+                    otp:
+                      type: string
+                      example: "342988"
+                    
+          404:
+            description: Email not found
+            content:
+              application/vnd.api+json:
+                schema:
+                  $ref: '#/components/schemas/NotFoundError'  
+          500:
+            description: Internal Server Error 
+            content:
+              application/vnd.api+json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'        
+  /v1/customers/reset-password:
+      patch:
+        summary: create new password
+        description:  Reset password for a given account number
+        tags: 
+          - Forgotpassword Journey
+        requestBody:
+          description: new password and re-enter password
+          content:
+            application/vnd.api+json:
+              schema:
+                
+                
+                properties:
+                  emailId:
+                    type: string
+                    description: EmailId
+                  password:
+                    type: string
+                    description: password
+                  re-enter password:
+                    type: string
+                    description: Re-enter password
+                    format: password
+        responses:
+          201:
+            description: Password reset successfully
+            content:
+              application/vnd.api+json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Password reset successful
+                      description: Success message
+          404:
+            description: Account not found
+            content:
+              application/vnd.api+json:
+                schema:
+                  $ref: '#/components/schemas/NotFoundError'
+          500:
+            description: Internal Server Error 
+            content:
+              application/vnd.api+json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+                 
+         
+                    
+  /v1/customers/{id}:
+    get:
+      summary: customer details
+      description: Retrieve customer details by account number
+      tags: 
+        - Customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+            format: number
+            example: 3212345678
+      responses:
+        "200":
+          description: customer details retrieved successfully
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ng-customers'
+                    
+                  
+        400:
+          description: Invalid request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+                    
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        404:
+          description: User not found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        500:
+          description: Internal Server Error
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+      security:
+        - bearerAuth: []          
+  /v1/customers/rewards/{id}:
+    get:
+      summary: reward points
+      description: Retrieve customer rewards points
+      tags: 
+        - Customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+            format: number
+            example: 3212345678
+      responses:
+        200:
+          description: customer details retrieved successfully
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  rewards:
+                    $ref: '#/components/schemas/ng-rewards'
+        
+                  
+        400:
+          description: Invalid request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+              
+                    
+        401:
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        404:
+          description: User not found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        500:
+          description: Internal Server Error
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+      security:
+        - bearerAuth: []          
+  /v1/customers/consumption/{id}:
+    get:
+      summary: consumption details
+      description: Retrieve customer consumption details by account number
+      tags: 
+        - Customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+            format: number
+            example: 3212345678
+      responses:
+        200:
+          description: customer details retrieved successfully
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  consumptiondetails:
+                    $ref: '#/components/schemas/ng-consumptions'
+        
+                  
+        400:
+          description: Invalid request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+                    
+        401:
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        404:
+          description: User not found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        500:
+          description: Internal Server Error
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError' 
+      security:
+        - bearerAuth: []          
+
+components:
+  securitySchemes:
+      bearerAuth:           # arbitrary name for the security scheme
+        type: http
+        scheme: bearer
+        bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+   
+     
+  schemas:
+    ng-authorization:
+      type: object
+      description: user Object
+      required:
+        - emailId 
+        
+        - password
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: authorizationdetails
+            id:
+              type: string
+              example: "13623626723"
+            attributes:
+              type: object
+              properties:
+                emailId:
+                  type: string
+                  pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                  example: 'user@example.com'
+                  description: emailid
+                  
+                
+                password:
+                  type: string
+                  description: Password
+                  minItems: 2
+                  format: password
+                
+    ng-customers:
+      type: object
+      required:
+        - accountNumber
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: customerdetails
+            id:
+              type: string
+              example: "3212345678"
+            attributes:
+              type: object
+              properties:
+                
+                accountNumber:
+                  type: integer
+                  minimum: 1000000000
+                  maximum: 9999999999
+                  example: 7892356432
+                emailId:
+                  type: string
+                  pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                  example: 'user@example.com'
+                siteAddress:
+                  type: string
+                  minLength: 3
+                  example: 'sholinganallur,chennai'
+                billAmount:
+                  type: number
+                  format: price
+                  example: 1000
+                listOfAppliances:
+                  type: array
+                  items:
+                    type: string
+                    minItems: 1
+                    uniqueItems: true
+                    example: [{id: 12345678-567 ,name: 'Fridge'},{id: 12345678-568,type: 'Gas Stove'}, {id: 12345678-569,type: 'Cooker'}]
+                    
+ 
+    ng-consumptions:
+      type: object
+      required:
+        - accountNumber
+      
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: consumptiondetails
+            id:
+              type: string
+              example: "3212345678"
+            attributes:
+              type: object
+              properties:
+                accountNumber:
+                  type: integer
+                  minimum: 1000000000
+                  maximum: 9999999999
+                  example: 7892356432
+                presentConsumption:
+                  type: number
+                  minimum: 2
+                  example: 1000
+                consumptionInMonth:
+                  type: object
+                  additionalProperties:
+                    type: number
+                    minimum: 1
+                  example: {"jan": 1, "feb": 2, "mar": 3}
+                carbonFootPrint:
+                  type: object
+                  additionalProperties:
+                    type: number
+                    minimum: 0
+                  example: {"jan": 32, "feb": 22, "mar": 43}
+ 
+    ng-rewards:
+    
+      type: object
+      required:
+        - accountNumber
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: rewards
+            id:
+              type: string
+              example: "3212345678"
+            attributes:
+              type: object
+              properties:
+                accountNumber:
+                  type: integer
+                  minimum: 1000000000
+                  maximum: 9999999999
+                  example: 7892356432
+                rewardPoints:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000000
+                  example: 100
+                energyQuiz:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  example: 25
+                energyTraining:
+                  type: integer
+                  minimum: 2
+                  maximum: 10
+                  example: 35
+          
+    BadRequestError:
+      type: object
+      properties:
+        errors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      details:
+                        type: string
+                        example: Invalid request
+                      
+                      status:
+                        type: integer
+                        example: 400
+
+    UnauthorizedError:
+      type: object
+      properties:
+        errors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      details:
+                        type: string
+                        example: 'Unauthorized'
+                      
+                      status:
+                        type: integer
+                        example: 401
+        
+
+    ForbiddenError:
+      type: object
+      properties:
+        errors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      details:
+                        type: string
+                        example: 'Forbidden'
+                      
+                      status:
+                        type: integer
+                        example: 403
+        
+
+    NotFoundError:
+      type: object
+      properties:
+        errors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      details:
+                        type: string
+                        example:  'Not found'
+                      
+                      status:
+                        type: integer
+                        example: 404
+        
+
+    InternalServerError:
+      type: object
+      properties:
+        errors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      details:
+                        type: string
+                        example: 'Internal server error'
+                      
+                      status:
+                        type: integer
+                        example: 500
