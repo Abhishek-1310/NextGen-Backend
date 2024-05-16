@@ -6,9 +6,9 @@ info:
 
 servers:
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/tejasujith25_gmail.com/NextGen/1.0 
+    url: https://virtserver.swaggerhub.com/tejasujith25_gmail.com/ 
 paths:
-  /v1/authorization:
+  /authorization:
     post:
       summary: fetch token
       description: authorize user with emailid and password
@@ -23,7 +23,7 @@ paths:
               
       responses:
         200:
-          description: Authenication successfully
+          description: Authenicated successfully
           content:
             application/vnd.api+json:
               schema:
@@ -42,13 +42,7 @@ paths:
                     type: string
                     example: read admin write
                     description: Authorization token
-        400:
-          description: Invalid request
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/BadRequestError'            
-                    
+       
         401:
           description: unauthorized
           content:
@@ -62,20 +56,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
                   
-  /v1/customers/forgot-password:
-    get:
+  /customers/forgot-password:
+    post:
         summary: email exists
         description: Check if an email address exists in the database
         tags: 
           - Forgotpassword Journey
-        parameters:
-          - in: query
-            name: emailid
-            required: true
-            schema:
-              type: string
-              format: email
-              example: user@example.com
+        requestBody:
+          required: true
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    format: email
+                    example: nextgen123@gmail.com
+
         responses:
           200:
             description: Email exists
@@ -84,7 +82,7 @@ paths:
                 schema:
                   type: object
                   properties:
-                    token:
+                    password Reset-token:
                       type: string
                       example: "asdfghjkwertyuiopsdfghjkexrctybujizwexrtyhuxecrvtyhus3d4f5gtyhud4f5g6h7j8edrfg6h78d5fg6h78fg6h78f5g6h7j8df5g6h7j8frtgyftghfg678g5f6h78fgyed8ijed8ujefujid8ifed8uhedyuhedujeducheidw9se"
                     otp:
@@ -103,7 +101,7 @@ paths:
               application/vnd.api+json:
                 schema:
                   $ref: '#/components/schemas/InternalServerError'        
-  /v1/customers/reset-password:
+  /customers/reset-password:
       patch:
         summary: create new password
         description:  Reset password for a given account number
@@ -114,27 +112,34 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                
-                
                 properties:
                   emailId:
                     type: string
                     description: EmailId
-                  password:
+                  new password:
                     type: string
                     description: password
-                  re-enter password:
+                  re-enter new password:
                     type: string
                     description: Re-enter password
                     format: password
         responses:
-          201:
+          200:
             description: Password reset successfully
             content:
               application/vnd.api+json:
                 schema:
                   type: object
                   properties:
+                    token:
+                      type: string
+                      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+                    typeoftoken: 
+                      type: string
+                      example: bearer
+                    expiresin: 
+                      type: number
+                      example: 6000  
                     message:
                       type: string
                       example: Password reset successful
@@ -151,13 +156,11 @@ paths:
               application/vnd.api+json:
                 schema:
                   $ref: '#/components/schemas/InternalServerError'
-                 
-         
-                    
-  /v1/customers/{id}:
+                  
+  /customers/{id}:
     get:
       summary: customer details
-      description: Retrieve customer details by account number
+      description: Retrieve customer details by Customer Id
       tags: 
         - Customer
       parameters:
@@ -204,12 +207,12 @@ paths:
                 $ref: '#/components/schemas/InternalServerError'
       security:
         - bearerAuth: []          
-  /v1/customers/rewards/{id}:
+  /customers/rewards/{id}:
     get:
       summary: reward points
       description: Retrieve customer rewards points
       tags: 
-        - Customer
+        - Rewards
       parameters:
         - in: path
           name: id
@@ -220,7 +223,7 @@ paths:
             example: 3212345678
       responses:
         200:
-          description: customer details retrieved successfully
+          description: reward details retrieved successfully
           content:
             application/vnd.api+json:
               schema:
@@ -228,16 +231,13 @@ paths:
                 properties:
                   rewards:
                     $ref: '#/components/schemas/ng-rewards'
-        
-                  
+                    
         400:
           description: Invalid request
           content:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/BadRequestError'
-              
-                    
         401:
           description: Unauthorized
           content:
@@ -257,11 +257,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
       security:
-        - bearerAuth: []          
-  /v1/customers/consumption/{id}:
+        - bearerAuth: []
+        
+  /customers/consumption/{id}:
     get:
       summary: consumption details
-      description: Retrieve customer consumption details by account number
+      description: Retrieve consumption details by customer Id
       tags: 
         - Customer
       parameters:
@@ -274,7 +275,7 @@ paths:
             example: 3212345678
       responses:
         200:
-          description: customer details retrieved successfully
+          description: consumption details retrieved successfully
           content:
             application/vnd.api+json:
               schema:
@@ -283,14 +284,12 @@ paths:
                   consumptiondetails:
                     $ref: '#/components/schemas/ng-consumptions'
         
-                  
         400:
           description: Invalid request
           content:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/BadRequestError'
-                    
         401:
           description: Unauthorized
           content:
@@ -314,19 +313,16 @@ paths:
 
 components:
   securitySchemes:
-      bearerAuth:           # arbitrary name for the security scheme
+      bearerAuth:           
         type: http
         scheme: bearer
-        bearerFormat: JWT    # optional, arbitrary value for documentation purposes
-   
-     
+        bearerFormat: JWT   
   schemas:
     ng-authorization:
       type: object
       description: user Object
       required:
-        - emailId 
-        
+        - emailId
         - password
       properties:
         data:
@@ -341,13 +337,14 @@ components:
             attributes:
               type: object
               properties:
+                Id:
+                  type: number
+                  example: 3212345678
                 emailId:
                   type: string
                   pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
                   example: 'user@example.com'
                   description: emailid
-                  
-                
                 password:
                   type: string
                   description: Password
@@ -371,7 +368,6 @@ components:
             attributes:
               type: object
               properties:
-                
                 accountNumber:
                   type: integer
                   minimum: 1000000000
@@ -397,12 +393,10 @@ components:
                     uniqueItems: true
                     example: [{id: 12345678-567 ,name: 'Fridge'},{id: 12345678-568,type: 'Gas Stove'}, {id: 12345678-569,type: 'Cooker'}]
                     
- 
     ng-consumptions:
       type: object
       required:
         - accountNumber
-      
       properties:
         data:
           type: object
@@ -439,7 +433,6 @@ components:
                   example: {"jan": 32, "feb": 22, "mar": 43}
  
     ng-rewards:
-    
       type: object
       required:
         - accountNumber
@@ -481,81 +474,74 @@ components:
       type: object
       properties:
         errors:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      details:
-                        type: string
-                        example: Invalid request
-                      
-                      status:
-                        type: integer
-                        example: 400
+            type: array
+            items:
+              type: object
+              properties:
+                details:
+                  type: string
+                  example: Invalid request
+                status:
+                  type: integer
+                  example: 400
 
     UnauthorizedError:
       type: object
       properties:
         errors:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      details:
-                        type: string
-                        example: 'Unauthorized'
-                      
-                      status:
-                        type: integer
-                        example: 401
-        
-
+            type: array
+            items:
+              type: object
+              properties:
+                details:
+                  type: string
+                  example: 'Unauthorized'
+                status:
+                  type: integer
+                  example: 401
+                  
     ForbiddenError:
       type: object
       properties:
         errors:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      details:
-                        type: string
-                        example: 'Forbidden'
-                      
-                      status:
-                        type: integer
-                        example: 403
-        
-
+            type: array
+            items:
+              type: object
+              properties:
+                details:
+                  type: string
+                  example: 'Forbidden'
+                status:
+                  type: integer
+                  example: 403
+                  
     NotFoundError:
       type: object
       properties:
         errors:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      details:
-                        type: string
-                        example:  'Not found'
-                      
-                      status:
-                        type: integer
-                        example: 404
-        
-
+            type: array
+            items:
+              type: object
+              properties:
+                details:
+                  type: string
+                  example: 'Not found'
+                status:
+                  type: integer
+                  example: 404
+                  
     InternalServerError:
       type: object
       properties:
         errors:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      details:
-                        type: string
-                        example: 'Internal server error'
-                      
-                      status:
-                        type: integer
-                        example: 500
+            type: array
+            items:
+              type: object
+              properties:
+                details:
+                  type: string
+                  example: 'Internal server error'
+                status:
+                  type: integer
+                  example: 500
+                  
